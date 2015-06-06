@@ -1,0 +1,85 @@
+<{php}>
+include_once XOOPS_ROOT_PATH . '/modules/publisher/include/common.php';
+$publisher =& PublisherPublisher::getInstance();
+$myts =& MyTextSanitizer::getInstance();
+$itemsObj = $publisher->getHandler('item')->getItems($limit = 4, $start = 0, array(_PUBLISHER_STATUS_PUBLISHED), -1, $sort = 'datesub', $order='DESC', '', true, $criteria = null, true);
+$totalItems = count($itemsObj);
+
+global $items;
+$items = array();
+if ($itemsObj) {
+		for ( $i = 0; $i < $totalItems; $i++ ) {
+
+			$newItems['itemid']       = $itemsObj[$i]->itemid();
+			$newItems['title']        = $itemsObj[$i]->title();
+			$newItems['body']         = $itemsObj[$i]->body();
+			$newItems['votes']        = $itemsObj[$i]->votes();
+			$newItems['image']        = XOOPS_URL . '/uploads/blank.gif';
+            $images = $itemsObj[$i]->getImages();
+            if (is_object($images['main'])) {
+                $newItems['image'] = XOOPS_URL . '/uploads/' . $images['main']->getVar('image_name');
+            }
+        $items[] = $newItems;
+	}
+}
+<{/php}>
+        <div class="block">
+          <div class="block-bot">
+            <div class="block-cnt">
+              <div id="slider">
+                <div class="buttons"> <span class="prev">prev</span> <span class="next">next</span> </div>
+                <div class="holder">
+                  <div class="frame">&nbsp;</div>
+                  <div class="content">
+                    <ul>
+<{php}>
+        foreach ( $GLOBALS['items'] as $myrow )
+        {
+        $GLOBALS['xoopsTpl']->assign('itemid', $myrow['itemid']);
+        $GLOBALS['xoopsTpl']->assign('title', $myrow['title']);
+        $GLOBALS['xoopsTpl']->assign('body', $myrow['body']);
+        $GLOBALS['xoopsTpl']->assign('votes', $myrow['votes']);
+        $GLOBALS['xoopsTpl']->assign('image', $myrow['image']);
+
+<{/php}>
+                    <li class="fragment">
+                      <div class="image">
+                      <img src="<{$image}>" alt="<{$title}>" width="638" height="287" />
+                      </div>
+                  <div class="cnt">
+                    <div class="cl">&nbsp;</div>
+                    <div class="side-a">
+                      <h4><a href="<{$xoops_url}>/modules/publisher/item.php?itemid=<{$itemid}>" title="<{$title}>"><{$title|truncate:15}></a></h4>
+                      <ul class="rating">
+                        <{if $votes == 0}>
+                        <li><span class="star empty-star">&nbsp;</span></li>
+                        <li><span class="star empty-star">&nbsp;</span></li>
+                        <li><span class="star empty-star">&nbsp;</span></li>
+                        <li><span class="star empty-star">&nbsp;</span></li>
+                        <li><span class="star empty-star">&nbsp;</span></li>
+                        <{else}>
+                        <li><span class="star full-star">&nbsp;</span></li>
+                        <li><span class="star full-star">&nbsp;</span></li>
+                        <li><span class="star full-star">&nbsp;</span></li>
+                        <li><span class="star full-star">&nbsp;</span></li>
+                        <li><span class="star full-star">&nbsp;</span></li>
+                        <{/if}> 
+                        <li><span class="votes"><{$votes}> votes</span></li>
+                      </ul>
+                    </div>
+                    <div class="side-b">
+                      <p><{$body|truncate:250}></p>
+                    </div>
+                    <div class="cl">&nbsp;</div>
+                  </div>
+                  </li>
+<{php}>
+        }
+<{/php}>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
